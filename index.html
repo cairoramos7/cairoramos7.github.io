@@ -54,7 +54,7 @@
   --ok: #38d9a9;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 72px; color-scheme: light; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; color-scheme: light; }
 :root[data-theme="dark"] { color-scheme: dark; }
 body {
   margin: 0; background: var(--bg); color: var(--fg);
@@ -233,7 +233,7 @@ footer .wrap { border-top: 1px solid var(--rule); padding-top: 24px; }
 .en { display: none; }
 html[data-lang="en"] .pt { display: none; }
 html[data-lang="en"] .en { display: revert; }
-html[data-lang="en"] .statement small.en, html[data-lang="pt"] .statement small.pt { display: block; }
+html[data-lang="pt"] .statement small.en, html[data-lang="en"] .statement small.pt { display: none; }
 /* palette: warm paper ground, flat colour blocks, one dark card */
 ::selection { background: var(--c-amber); color: #14161a; }
 .btn:hover { background: #ff7a5c; }
@@ -294,11 +294,88 @@ footer { background: var(--navy); }
 .statement p { color: var(--on-navy); }
 .statement .w { color: rgba(244,241,234,.32); } .statement .w.on { color: var(--on-navy); }
 .statement small { color: var(--on-navy-muted); }
-.contact { padding: 120px 0 48px; margin: 96px auto 0; }
+.contact { padding: 120px 16px 48px; margin: 96px auto 0; }
 .contact h2 { color: var(--on-navy); } .contact p { color: var(--on-navy-muted); }
 .contact .more { color: var(--coral-on-navy); }
 footer { position: relative; isolation: isolate; margin-top: 0; color: var(--on-navy-muted); }
 footer .wrap { border-top: 1px solid rgba(244,241,234,.14); }
+/* scroll life: a progress line, content that rises into place once, a slow drift on the hero card */
+.bar::after { content: ""; position: absolute; left: 0; bottom: -1px; width: 100%; height: 2px; background: var(--btn); transform: scaleX(var(--p, 0)); transform-origin: left; pointer-events: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); transition-delay: var(--d, 0ms); }
+  .js [data-reveal].in { opacity: 1; transform: none; }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .hero > h1 { animation: rise .8s cubic-bezier(.16,1,.3,1) both; }
+  .hero > .who { animation: rise .8s .1s cubic-bezier(.16,1,.3,1) both; }
+  .hero > .actions { animation: rise .8s .2s cubic-bezier(.16,1,.3,1) both; }
+  .hero > .code { animation: rise .9s .3s cubic-bezier(.16,1,.3,1) both; }
+  .hero > .code { translate: 0 var(--drift, 0px); }
+}
+/* results: each statement fills the screen */
+.statement { padding: 24px 16px; margin-top: 96px; }
+.statement p { min-height: calc(100svh - 64px); display: flex; flex-direction: column; justify-content: center; margin: 0; max-width: none; font-size: clamp(2.2rem, 6.5vw, 5rem); }
+.statement p > span { max-width: 18ch; }
+.statement small { max-width: 44ch; }
+/* results: each scroll jumps from one statement to the next (only while the band is on screen) */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-snap-type: y proximity; }
+  @media (min-width: 640px) { html { scroll-snap-type: y mandatory; } }
+}
+#experience, #stack, .contact, footer { scroll-snap-align: start; scroll-margin-top: 0; }
+.statement p { scroll-snap-stop: always; }
+.statement p { scroll-snap-align: start; scroll-margin-top: 0; }
+#hero { scroll-snap-align: start; scroll-margin-top: 0; }
+#projects { scroll-snap-align: start; scroll-margin-top: 0; }
+/* discreet database drawing next to the first result */
+.statement p { position: relative; }
+.db { --dbw: clamp(220px, 36vw, 520px); position: absolute; right: calc((100% - 100vw) / 2 - var(--dbw) * 0.24); top: 50%; width: var(--dbw); height: auto; transform: translateY(-50%); color: var(--coral-on-navy); opacity: .26; stroke-width: 1; pointer-events: none; }
+@media (max-width: 639px) { .db { --dbw: 170px; top: 9%; transform: none; opacity: .24; } }
+@media (prefers-reduced-motion: no-preference) {
+  .js .db path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1); }
+  .js .db path:nth-child(2) { transition-delay: .25s; } .js .db path:nth-child(3) { transition-delay: .5s; }
+  .js .db path:nth-child(4) { transition-delay: .7s; } .js .db path:nth-child(5) { transition-delay: .9s; }
+  .js .db.drawn path { stroke-dashoffset: 0; }
+}
+/* pipeline drawing next to the second result: four steps draw in, then one packet runs through */
+.pipe { --pw: clamp(150px, 24vw, 340px); position: absolute; right: calc((100% - 100vw) / 2 - var(--pw) * 0.2); top: 50%; width: var(--pw); height: auto; transform: translateY(-50%); color: var(--coral-on-navy); opacity: .26; pointer-events: none; }
+.pipe .pipe-dot { fill: currentColor; stroke: none; transform: translateY(120px); }
+@media (max-width: 639px) { .pipe { --pw: 110px; top: 9%; transform: none; opacity: .24; } }
+@media (prefers-reduced-motion: no-preference) {
+  .js .pipe rect, .js .pipe path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1s cubic-bezier(.16,1,.3,1); }
+  .js .pipe > :nth-child(2) { transition-delay: .15s; } .js .pipe > :nth-child(3) { transition-delay: .3s; }
+  .js .pipe > :nth-child(4) { transition-delay: .45s; } .js .pipe > :nth-child(5) { transition-delay: .6s; }
+  .js .pipe > :nth-child(6) { transition-delay: .75s; } .js .pipe > :nth-child(7) { transition-delay: .9s; }
+  .js .pipe .pipe-dot { opacity: 0; transform: translateY(0); transition: opacity .3s 1.7s, transform 1.4s cubic-bezier(.45,0,.2,1) 1.7s; }
+  .js .pipe.drawn rect, .js .pipe.drawn path { stroke-dashoffset: 0; }
+  .js .pipe.drawn .pipe-dot { opacity: 1; transform: translateY(120px); }
+}
+/* five days become two: five bars draw in, three fade, two fill */
+.days { --pw: clamp(150px, 24vw, 340px); position: absolute; right: calc((100% - 100vw) / 2 - var(--pw) * 0.2); top: 50%; width: var(--pw); height: auto; transform: translateY(-50%); color: var(--coral-on-navy); opacity: .26; pointer-events: none; }
+.days rect { fill: currentColor; fill-opacity: .35; }
+.days rect:nth-child(n+3) { fill-opacity: 0; opacity: .12; }
+@media (max-width: 639px) { .days { --pw: 110px; top: 9%; transform: none; opacity: .24; } }
+@media (prefers-reduced-motion: no-preference) {
+  .js .days rect { stroke-dasharray: 1; stroke-dashoffset: 1; fill-opacity: 0; opacity: 1; transition: stroke-dashoffset 1s cubic-bezier(.16,1,.3,1) var(--dd, 0s), opacity .8s 1.7s, fill-opacity .8s 1.7s; }
+  .js .days.drawn rect { stroke-dashoffset: 0; }
+  .js .days.drawn rect:nth-child(-n+2) { fill-opacity: .35; }
+  .js .days.drawn rect:nth-child(n+3) { opacity: .12; }
+}
+/* every block is at least one screen tall, so each scroll lands on a whole block */
+#projects, #experience, #stack { min-height: calc(100svh - 64px); display: flex; flex-direction: column; justify-content: center; }
+.contact { min-height: calc(100svh - 64px); display: flex; flex-direction: column; justify-content: center; align-items: center; }
+/* stack: grouped cards with the real logos */
+.stack-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 860px) { .stack-grid { grid-template-columns: 1fr 1fr; } }
+.stack-card { background: #fff; border: 1px solid var(--rule); border-radius: 24px; padding: 24px; }
+.stack-card h3 { margin: 0 0 16px; font-size: 15px; font-weight: 600; color: var(--muted); }
+.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.chips li { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 16px 6px 10px; border: 1px solid var(--rule); border-radius: 999px; background: var(--bg); color: var(--fg); font-size: 15px; font-weight: 500; transition: transform .15s ease-out, border-color .15s; }
+.chips li:hover { transform: translateY(-2px); border-color: var(--btn); }
+.chips img { width: 24px; height: 24px; object-fit: contain; display: block; }
+.stack-card .also { margin: 16px 0 0; font-size: 14px; color: var(--muted); }
+:root[data-theme="dark"] .stack-card { background: #1b1e24; }
+:root[data-theme="dark"] .chips li { background: #f4f1ea; color: #14161a; border-color: transparent; }
+@media (prefers-reduced-motion: reduce) { .chips li { transition: none; } .chips li:hover { transform: none; } }
 </style>
 </head>
 <body>
@@ -348,9 +425,30 @@ footer .wrap { border-top: 1px solid rgba(244,241,234,.14); }
   </header>
 
   <section class="wrap statement" aria-label="Resultados">
-    <p class="reveal"><span class="pt">Consultas que levavam 2–4 minutos passaram a levar 3–7 segundos</span><span class="en">Queries that took 2–4 minutes now take 3–7 seconds</span><small class="pt">SQL Server, Audax Capital FIDC</small><small class="en">SQL Server, Audax Capital FIDC</small></p>
-    <p class="reveal"><span class="pt">Pipelines de 10 minutos, agora em 3–4</span><span class="en">10-minute pipelines, now 3–4</span><small class="pt">Elasticsearch, RabbitMQ e Redis, Modal Networks</small><small class="en">Elasticsearch, RabbitMQ and Redis, Modal Networks</small></p>
-    <p class="reveal"><span class="pt">De cerca de 5 dias para 2 no processamento financeiro</span><span class="en">From about 5 days to 2 in finance processing</span><small class="pt">Automação em Python/Django, Audax Capital FIDC</small><small class="en">Python/Django automation, Audax Capital FIDC</small></p>
+    <p class="reveal"><svg class="db" viewBox="0 0 96 120" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <path pathLength="1" d="M8 24C8 14 28 8 48 8s40 6 40 16-18 16-40 16S8 34 8 24Z"/>
+        <path pathLength="1" d="M8 24v72M88 24v72"/>
+        <path pathLength="1" d="M8 52c0 10 18 16 40 16s40-6 40-16"/>
+        <path pathLength="1" d="M8 76c0 10 18 16 40 16s40-6 40-16"/>
+        <path pathLength="1" d="M8 96c0 10 18 16 40 16s40-6 40-16"/>
+      </svg><span class="pt">Consultas que levavam 2–4 minutos passaram a levar 3–7 segundos</span><span class="en">Queries that took 2–4 minutes now take 3–7 seconds</span><small class="pt">SQL Server, Audax Capital FIDC</small><small class="en">SQL Server, Audax Capital FIDC</small></p>
+    <p class="reveal"><svg class="pipe" viewBox="0 0 96 156" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <rect pathLength="1" x="20" y="4" width="56" height="28" rx="8"/>
+        <path pathLength="1" d="M48 32v12"/>
+        <rect pathLength="1" x="20" y="44" width="56" height="28" rx="8"/>
+        <path pathLength="1" d="M48 72v12"/>
+        <rect pathLength="1" x="20" y="84" width="56" height="28" rx="8"/>
+        <path pathLength="1" d="M48 112v12"/>
+        <rect pathLength="1" x="20" y="124" width="56" height="28" rx="8"/>
+        <circle class="pipe-dot" cx="48" cy="18" r="3.5"/>
+      </svg><span class="pt">Pipelines de 10 minutos, agora em 3–4</span><span class="en">10-minute pipelines, now 3–4</span><small class="pt">Elasticsearch, RabbitMQ e Redis, Modal Networks</small><small class="en">Elasticsearch, RabbitMQ and Redis, Modal Networks</small></p>
+    <p class="reveal"><svg class="days" viewBox="0 0 96 156" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <rect pathLength="1" x="20" y="4" width="56" height="20" rx="6" style="--dd:0s"/>
+        <rect pathLength="1" x="20" y="34" width="56" height="20" rx="6" style="--dd:.15s"/>
+        <rect pathLength="1" x="20" y="64" width="56" height="20" rx="6" style="--dd:.3s"/>
+        <rect pathLength="1" x="20" y="94" width="56" height="20" rx="6" style="--dd:.45s"/>
+        <rect pathLength="1" x="20" y="124" width="56" height="20" rx="6" style="--dd:.6s"/>
+      </svg><span class="pt">De cerca de 5 dias para 2 no processamento financeiro</span><span class="en">From about 5 days to 2 in finance processing</span><small class="pt">Automação em Python/Django, Audax Capital FIDC</small><small class="en">Python/Django automation, Audax Capital FIDC</small></p>
   </section>
 
   <section class="wrap" id="projects">
@@ -461,12 +559,52 @@ footer .wrap { border-top: 1px solid rgba(244,241,234,.14); }
 
   <section class="wrap" id="stack">
     <div class="head reveal"><h2>Stack</h2></div>
-    <dl class="stack reveal">
-      <div><dt>Front-end</dt><dd>JavaScript, TypeScript, React, Next.js, Vue.js, Tailwind CSS</dd></div>
-      <div><dt>Back-end</dt><dd>Node.js, NestJS, REST, GraphQL, JWT, DDD</dd></div>
-      <div><dt><span class="pt">Dados e filas</span><span class="en">Data and queues</span></dt><dd>PostgreSQL, MongoDB, MySQL, SQL Server, Redis, RabbitMQ, BullMQ, Elasticsearch</dd></div>
-      <div><dt>Cloud</dt><dd>AWS, GCP, Docker, GitHub Actions</dd></div>
-    </dl>
+    <div class="stack-grid">
+      <article class="stack-card">
+        <h3>Front-end</h3>
+        <ul class="chips">
+          <li><img src="icons/javascript.svg" alt="" width="24" height="24" loading="lazy">JavaScript</li>
+          <li><img src="icons/typescript.svg" alt="" width="24" height="24" loading="lazy">TypeScript</li>
+          <li><img src="icons/react.svg" alt="" width="24" height="24" loading="lazy">React</li>
+          <li><img src="icons/nextjs.svg" alt="" width="24" height="24" loading="lazy">Next.js</li>
+          <li><img src="icons/vue.svg" alt="" width="24" height="24" loading="lazy">Vue.js</li>
+          <li><img src="icons/tailwindcss.svg" alt="" width="24" height="24" loading="lazy">Tailwind CSS</li>
+        </ul>
+      </article>
+      <article class="stack-card">
+        <h3>Back-end</h3>
+        <ul class="chips">
+          <li><img src="icons/nodejs.svg" alt="" width="24" height="24" loading="lazy">Node.js</li>
+          <li><img src="icons/nestjs.svg" alt="" width="24" height="24" loading="lazy">NestJS</li>
+          <li><img src="icons/graphql.svg" alt="" width="24" height="24" loading="lazy">GraphQL</li>
+          <li><img src="icons/python.svg" alt="" width="24" height="24" loading="lazy">Python</li>
+          <li><img src="icons/django.svg" alt="" width="24" height="24" loading="lazy">Django</li>
+        </ul>
+        <p class="also"><span class="pt">Também: REST, JWT, DDD</span><span class="en">Also: REST, JWT, DDD</span></p>
+      </article>
+      <article class="stack-card">
+        <h3><span class="pt">Dados e filas</span><span class="en">Data and queues</span></h3>
+        <ul class="chips">
+          <li><img src="icons/postgres.svg" alt="" width="24" height="24" loading="lazy">PostgreSQL</li>
+          <li><img src="icons/mongodb.svg" alt="" width="24" height="24" loading="lazy">MongoDB</li>
+          <li><img src="icons/mysql.svg" alt="" width="24" height="24" loading="lazy">MySQL</li>
+          <li><img src="icons/redis.svg" alt="" width="24" height="24" loading="lazy">Redis</li>
+          <li><img src="icons/rabbitmq.svg" alt="" width="24" height="24" loading="lazy">RabbitMQ</li>
+          <li><img src="icons/elasticsearch.svg" alt="" width="24" height="24" loading="lazy">Elasticsearch</li>
+        </ul>
+        <p class="also"><span class="pt">Também: SQL Server, BullMQ</span><span class="en">Also: SQL Server, BullMQ</span></p>
+      </article>
+      <article class="stack-card">
+        <h3><span class="pt">Cloud e entrega</span><span class="en">Cloud and delivery</span></h3>
+        <ul class="chips">
+          <li><img src="icons/aws.svg" alt="" width="24" height="24" loading="lazy">AWS</li>
+          <li><img src="icons/google-cloud.svg" alt="" width="24" height="24" loading="lazy">Google Cloud</li>
+          <li><img src="icons/digitalocean.svg" alt="" width="24" height="24" loading="lazy">DigitalOcean</li>
+          <li><img src="icons/docker.svg" alt="" width="24" height="24" loading="lazy">Docker</li>
+          <li><img src="icons/github-actions.svg" alt="" width="24" height="24" loading="lazy">GitHub Actions</li>
+        </ul>
+      </article>
+    </div>
   </section>
 
   <section class="wrap contact" id="contact">
@@ -588,6 +726,55 @@ footer .wrap { border-top: 1px solid rgba(244,241,234,.14); }
     update();
   }
 
+
+  /* scroll life */
+  var root2 = document.documentElement;
+  var motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var codeCard = document.querySelector('.hero > .code');
+  var ticking2 = false;
+  function onScroll2() {
+    if (ticking2) { return; }
+    ticking2 = true;
+    requestAnimationFrame(function () {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      root2.style.setProperty('--p', max > 0 ? String(Math.min(window.scrollY / max, 1)) : '0');
+      if (window.scrollY < 120) { document.querySelectorAll('.bar__links a[aria-current]').forEach(function (a) { a.removeAttribute('aria-current'); }); }
+      if (codeCard && motionOk && window.scrollY < window.innerHeight) {
+        root2.style.setProperty('--drift', String(Math.round(window.scrollY * -0.06)) + 'px');
+      }
+      ticking2 = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll2, { passive: true });
+  onScroll2();
+  if (motionOk && 'IntersectionObserver' in window) {
+    var groups = ['.head', '.bento > .tile', '.timeline > .role', '.stack-card', '.contact > *'];
+    var revealIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in'); revealIo.unobserve(en.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    groups.forEach(function (sel) {
+      document.querySelectorAll(sel).forEach(function (el, i) {
+        el.setAttribute('data-reveal', '');
+        el.style.setProperty('--d', Math.min(i % 4, 3) * 80 + 'ms');
+        revealIo.observe(el);
+      });
+    });
+  }
+
+
+  /* the drawings play every time their result comes into view, and reset once it is off screen */
+  document.querySelectorAll('.db, .pipe, .days').forEach(function (icon) {
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.intersectionRatio >= 0.5) { icon.classList.add('drawn'); }
+          else if (en.intersectionRatio === 0) { icon.classList.remove('drawn'); }
+        });
+      }, { threshold: [0, 0.5] }).observe(icon.parentNode);
+    } else { icon.classList.add('drawn'); }
+  });
 
   /* specular highlight that follows the pointer on glass tiles */
   document.querySelectorAll('.tile').forEach(function (t) {
