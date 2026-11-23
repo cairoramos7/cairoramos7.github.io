@@ -309,6 +309,7 @@ html[data-lang="pt"] .statement small.en, html[data-lang="en"] .statement small.
 .statement, .contact { background: var(--navy); box-shadow: 0 0 0 100vmax var(--navy); clip-path: inset(0 -100vmax); }
 footer { background: var(--navy); }
 .statement, .contact { width: min(1112px, 100%); padding-inline: 16px; }
+@media (max-width: 1112px) { .statement { overflow-x: clip; } }
 .statement { padding: 96px 0 56px; margin-top: 96px; }
 .statement p { color: var(--on-navy); }
 .statement .w { color: rgba(244,241,234,.32); } .statement .w.on { color: var(--on-navy); }
