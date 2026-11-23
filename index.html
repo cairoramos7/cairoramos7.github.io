@@ -345,6 +345,8 @@ footer .wrap { border-top: 1px solid rgba(244,241,234,.14); }
 .statement p { scroll-snap-stop: always; }
 .statement p { scroll-snap-align: start; scroll-margin-top: 0; }
 #hero { scroll-snap-align: start; scroll-margin-top: 0; }
+/* during menu navigation, snapping would fight the programmatic scroll on touch browsers */
+html.nav-jump { scroll-snap-type: none !important; }
 #projects { scroll-snap-align: start; scroll-margin-top: 0; }
 /* discreet database drawing next to the first result */
 .statement p { position: relative; }
@@ -694,8 +696,23 @@ footer .wrap { border-top: 1px solid rgba(244,241,234,.14); }
     var open = bar.classList.toggle('open');
     burger.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
+  var snapTimer = null;
   document.querySelectorAll('.bar__links a').forEach(function (a) {
-    a.addEventListener('click', function () { bar.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); });
+    a.addEventListener('click', function (ev) {
+      bar.classList.remove('open'); burger.setAttribute('aria-expanded', 'false');
+      var id = a.getAttribute('href');
+      var target = id && id.charAt(0) === '#' ? document.querySelector(id) : null;
+      if (!target) { return; }
+      ev.preventDefault();
+      var root = document.documentElement;
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var top = Math.max(0, Math.round(target.getBoundingClientRect().top + window.pageYOffset - 64));
+      root.classList.add('nav-jump');
+      window.scrollTo({ top: top, behavior: reduce ? 'auto' : 'smooth' });
+      try { history.replaceState(null, '', id); } catch (e) {}
+      clearTimeout(snapTimer);
+      snapTimer = setTimeout(function () { root.classList.remove('nav-jump'); }, reduce ? 100 : 1200);
+    });
   });
   if ('IntersectionObserver' in window) {
     var links = {};
