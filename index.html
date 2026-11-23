@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="pt-BR" data-lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cairo Ramos — Desenvolvedor Full Stack</title>
+<meta name="description" content="Portfólio de Cairo Ramos, desenvolvedor full stack com Node.js, NestJS, React e Next.js.">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#f2f5f8">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cairo Ramos — Full Stack Developer">
+<meta property="og:description" content="Node.js, NestJS, React and Next.js. 10+ years in production, working remotely from Brazil.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230b0d10'/%3E%3Cpath fill='%23ff5a36' fill-rule='evenodd' d='M12 5a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 3.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f2f5f8;
+  --glass: rgba(255, 255, 255, 0.7);
+  --glass-edge: rgba(20, 22, 26, 0.12);
+  --glass-hi: rgba(255, 255, 255, 0.9);
+  --nav-bg: rgba(255, 255, 255, 0.88);
+  --fg: #14161a;
+  --muted: #4d525b;
+  --link: #c2381a;
+  --btn: #ff5a36;
+  --on-btn: #14161a;
+  --rule: rgba(20, 22, 26, 0.12);
+  --ok: #0b7a58;
+  --c-coral: #ff6b4a;
+  --c-amber: #ffc533;
+  --c-mint: #38d9a9;
+  --c-sky: #7dd3fc;
+  --c-cream: #ffffff;
+  --code-bg: #14161a;
+  --code-fg: #f4f1ea;
+  --code-k: #ff8a6b;
+  --code-s: #5eead4;
+  --code-p: #9aa0aa;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+}
+:root[data-theme="dark"] {
+  --bg: #111317;
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-edge: rgba(255, 255, 255, 0.12);
+  --glass-hi: rgba(255, 255, 255, 0.1);
+  --nav-bg: rgba(24, 27, 32, 0.86);
+  --fg: #f4f1ea;
+  --muted: #b4b9c2;
+  --link: #ff8a6b;
+  --btn: #ff6b4a;
+  --rule: rgba(255, 255, 255, 0.12);
+  --ok: #38d9a9;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--font); font-size: 17px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+::selection { background: var(--btn); color: #fff; }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 4px; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--link); outline-offset: 3px; border-radius: 8px; }
+
+main, footer { position: relative; z-index: 1; }
+
+/* floating glass navigation */
+.nav {
+  position: fixed; z-index: 10; top: 12px; left: 50%; transform: translateX(-50%);
+  width: min(960px, calc(100% - 24px));
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 8px 8px 8px 20px; border-radius: 999px;
+  background: var(--nav-bg); border: 1px solid var(--glass-edge);
+  backdrop-filter: blur(24px) saturate(1.8); -webkit-backdrop-filter: blur(24px) saturate(1.8);
+}
+.nav .brand { font-weight: 600; color: var(--fg); font-size: 15px; letter-spacing: -0.01em; }
+.nav ul { display: none; margin: 0; padding: 0; list-style: none; gap: 4px; }
+.nav ul a { color: var(--fg); opacity: .8; font-size: 14px; padding: 8px 12px; border-radius: 999px; display: block; }
+.nav ul a:hover { opacity: 1; background: var(--glass); text-decoration: none; }
+.nav .controls { display: flex; gap: 8px; }
+.pill {
+  font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--fg);
+  background: var(--glass); border: 1px solid var(--glass-edge); border-radius: 999px; padding: 8px 12px;
+}
+.pill:hover { background: var(--glass-hi); }
+@media (min-width: 720px) { .nav ul { display: flex; } }
+
+
+/* keyboard and touch: skip link, 44px targets */
+.skip { position: absolute; left: 16px; top: -64px; z-index: 30; padding: 12px 16px; border-radius: 12px; background: var(--btn); color: var(--on-btn); font-weight: 600; }
+.skip:focus { top: 12px; text-decoration: none; }
+.pill { min-height: 44px; min-width: 44px; }
+.nav ul a { min-height: 44px; display: flex; align-items: center; }
+.tile .links a { display: inline-flex; align-items: center; min-height: 44px; }
+.btn { min-height: 48px; display: inline-flex; align-items: center; }
+.more { display: inline-flex; align-items: center; min-height: 44px; }
+.contact .actions a { min-height: 44px; }
+.wrap { width: min(1080px, calc(100% - 32px)); margin: 0 auto; }
+
+/* hero */
+.hero { position: relative; isolation: isolate;
+  min-height: 100svh; display: grid; align-content: center; justify-items: center; text-align: center;
+  padding: 120px 0 72px;
+}
+
+/* the API response card is the one bright element of the first screen */
+.code { position: relative; width: 100%; max-width: 520px; margin-top: 44px; text-align: left; border-radius: 20px; overflow: hidden;
+  background: var(--nav-bg); border: 1px solid var(--glass-edge); backdrop-filter: blur(24px) saturate(1.8); -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  }
+.code__bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--rule); color: var(--muted); font: 500 13px/1 "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace; }
+.code__dots { display: inline-flex; gap: 8px; }
+.code__dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--rule); display: block; }
+.code__ok { margin-left: auto; color: var(--ok); font-weight: 500; }
+.code pre { margin: 0; padding: 16px 20px 24px; overflow-x: auto; font: 400 14px/1.75 "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace; color: var(--fg); }
+.code .ln { display: block; }
+.code .k { color: var(--link); } .code .s { color: var(--tok-s); } .code .p { color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes ln-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  .code .ln { animation: ln-in .55s cubic-bezier(.16,1,.3,1) both; animation-delay: calc(var(--i, 0) * 110ms + 450ms); }
+}
+@media (max-width: 480px) { .code pre { font-size: 12.5px; padding: 16px 14px 18px; } }
+@media (min-width: 1024px) {
+  .hero { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); column-gap: 56px; text-align: left; justify-items: start; align-content: center; }
+  .hero > h1, .hero > .who, .hero > .actions { grid-column: 1; }
+  .hero > h1 { max-width: 12ch; }
+  .hero .actions { justify-content: flex-start; }
+  .hero > .code { grid-column: 2; grid-row: 1 / span 3; align-self: center; justify-self: end; margin-top: 0; }
+}
+.hero h1 {
+  margin: 0; max-width: 14ch; text-wrap: balance;
+  font-size: clamp(2.9rem, 9vw, 6rem); font-weight: 600; line-height: 1.03; letter-spacing: -0.035em;
+}
+.hero .who { margin: 24px 0 0; font-size: clamp(1.15rem, 2.6vw, 1.6rem); font-weight: 500; color: var(--muted); letter-spacing: -0.01em; }
+.hero .who b { color: var(--fg); font-weight: 600; }
+.actions { margin: 36px 0 0; display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: center; justify-content: center; }
+.btn {
+  display: inline-block; background: var(--btn); color: var(--on-btn); font-weight: 600; font-size: 17px;
+  padding: 12px 24px; border-radius: 999px;
+}
+.btn:hover { background: #0062c4; text-decoration: none; }
+.more { font-size: 19px; }
+.more::after { content: " ›"; }
+
+/* statement */
+.statement { padding: 56px 0 24px; }
+.statement p {
+  margin: 0 0 clamp(28px, 6vw, 56px); max-width: 20ch;
+  font-size: clamp(2rem, 6.2vw, 4.4rem); font-weight: 600; line-height: 1.07; letter-spacing: -0.03em; text-wrap: balance;
+}
+.statement p > span { color: inherit; }
+.w { color: var(--muted); transition: color .35s ease-out; }
+.w.on { color: var(--fg); }
+.statement small { display: block; margin-top: 16px; font-size: 15px; font-weight: 500; letter-spacing: 0; color: var(--muted); max-width: 44ch; line-height: 1.4; }
+
+/* section heads */
+.head { padding: 96px 0 32px; }
+.head h2 {
+  margin: 0; font-size: clamp(2.2rem, 6vw, 3.8rem); font-weight: 600; line-height: 1.05; letter-spacing: -0.03em; text-wrap: balance;
+}
+.head p { margin: 12px 0 0; max-width: 46ch; color: var(--muted); font-size: 19px; }
+
+/* bento with liquid-glass tiles */
+.bento { display: grid; gap: 16px; grid-template-columns: 1fr; }
+.tile {
+  position: relative; overflow: hidden; border-radius: 28px; padding: 28px;
+  background: var(--glass); border: 1px solid var(--glass-edge);
+  backdrop-filter: blur(28px) saturate(1.6); -webkit-backdrop-filter: blur(28px) saturate(1.6);
+  display: flex; flex-direction: column; justify-content: space-between; gap: 28px; min-height: 230px;
+}
+.tile::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), var(--glass-hi), transparent 60%);
+}
+.tile:hover::before { opacity: 1; }
+.tile > * { position: relative; }
+.tile h3 { margin: 0; font-size: clamp(1.6rem, 3.4vw, 2.1rem); font-weight: 600; letter-spacing: -0.025em; line-height: 1.1; }
+.tile .desc { margin: 10px 0 0; color: var(--muted); font-size: 17px; max-width: 46ch; }
+.tile .foot { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; justify-content: space-between; }
+.tile .tags { margin: 0; color: var(--muted); font: 500 13px/1.4 "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace; letter-spacing: 0; }
+.tile .links { display: flex; gap: 18px; font-size: 16px; font-weight: 500; }
+.tile .links a::after { content: " ›"; }
+.badge { display: inline-flex; align-items: center; gap: 8px; font: 500 13px/1 "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace; color: var(--ok); margin-bottom: 16px; }
+.badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.badge.quiet { color: var(--muted); }
+.swatches { display: flex; gap: 8px; margin-top: 16px; }
+.swatches i { width: 44px; height: 44px; border-radius: 12px; display: block; border: 1px solid var(--glass-edge); }
+
+@media (min-width: 860px) {
+  .bento { grid-template-columns: repeat(12, 1fr); }
+  .t-hues { grid-column: span 7; min-height: 340px; }
+  .t-videira { grid-column: span 5; min-height: 340px; }
+  .t-nexhub { grid-column: span 8; }
+  .t-table { grid-column: span 4; }
+  .t-md { grid-column: span 6; }
+  .t-ddd { grid-column: span 6; }
+}
+
+/* timeline */
+.timeline { border-top: 1px solid var(--rule); }
+.role { display: grid; gap: 8px; padding: 32px 0; border-bottom: 1px solid var(--rule); }
+.role .when { color: var(--muted); font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.role h3 { margin: 0; font-size: clamp(1.5rem, 3vw, 1.9rem); font-weight: 600; letter-spacing: -0.025em; }
+.role p { margin: 0; color: var(--muted); max-width: 60ch; }
+@media (min-width: 860px) {
+  .role { grid-template-columns: 240px 1fr; column-gap: 32px; }
+  .role .when { padding-top: 8px; }
+  .role .body { display: grid; gap: 8px; }
+}
+
+/* stack */
+.stack { display: grid; gap: 28px; grid-template-columns: 1fr; margin: 0; }
+.stack dt { font-weight: 600; font-size: 19px; letter-spacing: -0.015em; }
+.stack dd { margin: 8px 0 0; color: var(--muted); }
+@media (min-width: 760px) { .stack { grid-template-columns: repeat(4, 1fr); } }
+
+/* contact */
+.contact { padding: 120px 0 48px; text-align: center; }
+.contact h2 { margin: 0 auto; max-width: 16ch; font-size: clamp(2.4rem, 7vw, 4.6rem); font-weight: 600; line-height: 1.04; letter-spacing: -0.035em; text-wrap: balance; }
+.contact p { margin: 16px auto 0; color: var(--muted); font-size: 19px; max-width: 40ch; }
+.contact .actions { margin-top: 32px; }
+footer { padding: 28px 0 56px; color: var(--muted); font-size: 14px; text-align: center; }
+footer .wrap { border-top: 1px solid var(--rule); padding-top: 24px; }
+
+
+.en { display: none; }
+html[data-lang="en"] .pt { display: none; }
+html[data-lang="en"] .en { display: revert; }
+html[data-lang="en"] .statement small.en, html[data-lang="pt"] .statement small.pt { display: block; }
+/* palette: warm paper ground, flat colour blocks, one dark card */
+::selection { background: var(--c-amber); color: #14161a; }
+.btn:hover { background: #ff7a5c; }
+.code { background: var(--code-bg); color: var(--code-fg); border-color: rgba(20,22,26,.9); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.code__bar { border-bottom-color: rgba(255,255,255,.12); color: var(--code-p); }
+.code__dots i { background: rgba(255,255,255,.2); }
+.code pre { color: var(--code-fg); }
+.code .k { color: var(--code-k); } .code .s { color: var(--code-s); } .code .p { color: var(--code-p); }
+.code__ok { color: var(--c-mint); }
+.hero-shapes { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.hero-shapes i { position: absolute; display: block; }
+.hero-shapes .a { width: min(34vmin, 320px); aspect-ratio: 1; border-radius: 50%; background: var(--c-amber); right: 3%; top: 12%; }
+.hero-shapes .b { width: min(22vmin, 220px); aspect-ratio: 1; border-radius: 32%; background: var(--c-coral); left: 2%; bottom: 6%; transform: rotate(14deg); }
+.hero-shapes .c { width: min(16vmin, 150px); aspect-ratio: 1; border-radius: 50%; background: var(--c-mint); right: 26%; bottom: 4%; }
+.statement p::before { content: ""; display: block; width: 16px; height: 16px; border-radius: 50%; margin-bottom: 16px; background: var(--c-coral); }
+.statement p:nth-of-type(2)::before { background: var(--c-amber); }
+.statement p:nth-of-type(3)::before { background: var(--c-mint); }
+.w { color: color-mix(in srgb, var(--fg) 30%, transparent); }
+.tile { --tf: #14161a; --tm: rgba(20,22,26,.78); background: var(--tbg, var(--c-cream)); color: var(--tf); border: 1px solid rgba(20,22,26,.1); backdrop-filter: none; -webkit-backdrop-filter: none; transition: transform .2s ease-out; }
+.tile:hover { transform: translateY(-2px); }
+.tile::before { display: none; }
+.tile .desc, .tile .tags { color: var(--tm); }
+.tile .links a { color: var(--tf); text-decoration: underline; text-underline-offset: 4px; }
+.badge, .badge.quiet { color: var(--tf); }
+.badge::before { background: #14161a; }
+.swatches i { border-color: rgba(20,22,26,.2); }
+.t-hues { --tbg: var(--c-sky); } .t-videira { --tbg: var(--c-amber); } .t-table { --tbg: var(--c-mint); } .t-md { --tbg: var(--c-coral); } .t-ddd { --tbg: var(--c-cream); }
+.t-nexhub { --tbg: #14161a; --tf: #f4f1ea; --tm: rgba(244,241,234,.78); }
+.t-nexhub .badge::before { background: var(--c-mint); }
+.contact { background: var(--c-coral); color: #14161a; border-radius: 32px; padding: 80px 24px; margin: 96px auto 48px; }
+.contact h2, .contact p { color: #14161a; }
+.contact .btn { background: #14161a; color: #f4f1ea; }
+.contact .btn:hover { background: #2a2e36; }
+.contact .more { color: #14161a; text-decoration: underline; text-underline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .tile { transition: none; } .tile:hover { transform: none; } }
+/* polish: one accent. Colour blocks, decorative shapes and the coral contact slab are gone */
+.hero-shapes { display: none; }
+.statement p:nth-of-type(2)::before, .statement p:nth-of-type(3)::before { background: var(--c-coral); }
+.tile, .t-hues, .t-videira, .t-table, .t-md, .t-ddd, .t-nexhub { --tbg: #fff; --tf: #14161a; --tm: #4d525b; background: var(--tbg); border: 1px solid var(--rule); }
+:root[data-theme="dark"] .tile, :root[data-theme="dark"] .t-hues, :root[data-theme="dark"] .t-videira, :root[data-theme="dark"] .t-table, :root[data-theme="dark"] .t-md, :root[data-theme="dark"] .t-ddd, :root[data-theme="dark"] .t-nexhub { --tbg: #1b1e24; --tf: #f4f1ea; --tm: #b4b9c2; }
+.badge::before, .t-nexhub .badge::before { background: var(--tf); opacity: .5; }
+.badge:not(.quiet)::before { background: var(--c-mint); opacity: 1; }
+.swatches i { border-color: var(--rule); }
+.contact { background: transparent; color: var(--fg); border-radius: 0; padding: 120px 0 48px; margin: 0 auto; }
+.contact h2 { color: var(--fg); } .contact p { color: var(--muted); }
+.contact .btn { background: var(--btn); color: var(--on-btn); }
+.contact .btn:hover { background: #ff7a5c; }
+.contact .more { color: var(--link); text-decoration: none; }
+/* 60-30-10: 60% light ground, 30% deep navy (results band, contact band, code card), 10% coral */
+:root { --navy: #151b27; --on-navy: #f4f1ea; --on-navy-muted: #b4bcc9; --coral-on-navy: #ff8a6b; }
+:root[data-theme="dark"] { --navy: #1c2536; }
+.code { background: var(--navy); }
+.statement, .contact { position: relative; isolation: isolate; }
+.statement, .contact { background: var(--navy); box-shadow: 0 0 0 100vmax var(--navy); clip-path: inset(0 -100vmax); }
+footer { background: var(--navy); }
+.statement, .contact { width: min(1112px, 100%); padding-inline: 16px; }
+.statement { padding: 96px 0 56px; margin-top: 96px; }
+.statement p { color: var(--on-navy); }
+.statement .w { color: rgba(244,241,234,.32); } .statement .w.on { color: var(--on-navy); }
+.statement small { color: var(--on-navy-muted); }
+.contact { padding: 120px 0 48px; margin: 96px auto 0; }
+.contact h2 { color: var(--on-navy); } .contact p { color: var(--on-navy-muted); }
+.contact .more { color: var(--coral-on-navy); }
+footer { position: relative; isolation: isolate; margin-top: 0; color: var(--on-navy-muted); }
+footer .wrap { border-top: 1px solid rgba(244,241,234,.14); }
+</style>
+</head>
+<body>
+<a class="skip" href="#top"><span class="pt">Ir para o conteúdo</span><span class="en">Skip to content</span></a>
+
+<nav class="nav" aria-label="Principal">
+  <a class="brand" href="#top">Cairo Ramos</a>
+  <ul>
+    <li><a href="#projects"><span class="pt">Projetos</span><span class="en">Projects</span></a></li>
+    <li><a href="#experience"><span class="pt">Trajetória</span><span class="en">Experience</span></a></li>
+    <li><a href="#stack">Stack</a></li>
+    <li><a href="#contact"><span class="pt">Contato</span><span class="en">Contact</span></a></li>
+  </ul>
+  <div class="controls">
+    <button class="pill" id="lang" type="button" aria-label="Mudar idioma / Change language">EN</button>
+    <button class="pill" id="theme" type="button" aria-label="Alternar tema claro e escuro / Toggle light and dark theme"><span class="pt">Tema</span><span class="en">Theme</span></button>
+  </div>
+</nav>
+
+<main id="top">
+  <header class="wrap hero" id="hero">
+    <div class="hero-shapes" aria-hidden="true"><i class="a"></i><i class="b"></i><i class="c"></i></div>
+    <h1>
+      <span class="pt">Do banco de dados à interface</span>
+      <span class="en">From the database to the interface</span>
+    </h1>
+    <p class="who"><b>Cairo Ramos</b> · <span class="pt">Desenvolvedor Full Stack</span><span class="en">Full Stack Developer</span></p>
+    <div class="actions">
+      <a class="btn" href="#projects"><span class="pt">Ver projetos</span><span class="en">See projects</span></a>
+      <a class="more" href="mailto:cairoramos7@gmail.com"><span class="pt">Falar por email</span><span class="en">Send an email</span></a>
+    </div>
+    <div class="code" role="img" aria-label="An API-style profile: name Cairo Ramos, Full Stack Developer, 10+ years of experience, Node.js, NestJS, React and Next.js, in Goiás, Brazil, remote">
+      <div class="code__bar"><span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span><span>GET /profile</span><span class="code__ok">200 OK</span></div>
+      <pre aria-hidden="true"><span class="ln p" style="--i:0">{</span><span class="ln" style="--i:1">  <span class="k">"name"</span><span class="p">:</span> <span class="s">"Cairo Ramos"</span><span class="p">,</span></span><span class="ln" style="--i:2">  <span class="k">"role"</span><span class="p">:</span> <span class="s">"Full Stack Developer"</span><span class="p">,</span></span><span class="ln" style="--i:3">  <span class="k">"experience"</span><span class="p">:</span> <span class="s">"10+ years"</span><span class="p">,</span></span><span class="ln" style="--i:4">  <span class="k">"stack"</span><span class="p">:</span> <span class="p">[</span><span class="s">"Node.js"</span><span class="p">,</span> <span class="s">"NestJS"</span><span class="p">,</span></span><span class="ln" style="--i:5">            <span class="s">"React"</span><span class="p">,</span> <span class="s">"Next.js"</span><span class="p">],</span></span><span class="ln" style="--i:6">  <span class="k">"location"</span><span class="p">:</span> <span class="s">"Goiás, Brazil"</span><span class="p">,</span></span><span class="ln" style="--i:7">  <span class="k">"remote"</span><span class="p">:</span> <span class="s">true</span></span><span class="ln p" style="--i:8">}</span></pre>
+    </div>
+  </header>
+
+  <section class="wrap statement" aria-label="Resultados">
+    <p class="reveal"><span class="pt">Consultas que levavam 2–4 minutos passaram a levar 3–7 segundos</span><span class="en">Queries that took 2–4 minutes now take 3–7 seconds</span><small class="pt">SQL Server, Audax Capital FIDC</small><small class="en">SQL Server, Audax Capital FIDC</small></p>
+    <p class="reveal"><span class="pt">Pipelines de 10 minutos, agora em 3–4</span><span class="en">10-minute pipelines, now 3–4</span><small class="pt">Elasticsearch, RabbitMQ e Redis, Modal Networks</small><small class="en">Elasticsearch, RabbitMQ and Redis, Modal Networks</small></p>
+    <p class="reveal"><span class="pt">De cerca de 5 dias para 2 no processamento financeiro</span><span class="en">From about 5 days to 2 in finance processing</span><small class="pt">Automação em Python/Django, Audax Capital FIDC</small><small class="en">Python/Django automation, Audax Capital FIDC</small></p>
+  </section>
+
+  <section class="wrap" id="projects">
+    <div class="head reveal">
+      <h2><span class="pt">Projetos</span><span class="en">Projects</span></h2>
+      <p class="pt">Código aberto, demos no ar e sistemas em produção.</p>
+      <p class="en">Open source, live demos and production systems.</p>
+    </div>
+    <div class="bento">
+      <article class="tile t-hues reveal">
+        <div>
+          <div class="badge"><span class="pt">Demo no ar</span><span class="en">Live demo</span></div>
+          <h3>image-hues</h3>
+          <p class="desc pt">Biblioteca que extrai cores dominantes e cores de contraste de imagens raster e SVG.</p>
+          <p class="desc en">Library that extracts dominant colors and their contrast colors from raster and SVG images.</p>
+          <div class="swatches" aria-hidden="true"><i style="background:#1d3557"></i><i style="background:#457b9d"></i><i style="background:#a8dadc"></i><i style="background:#f1faee"></i><i style="background:#e63946"></i></div>
+        </div>
+        <div class="foot">
+          <p class="tags">TypeScript · SVG</p>
+          <div class="links"><a href="https://cairoramos7.github.io/image-hues/">Demo</a><a href="https://github.com/cairoramos7/image-hues"><span class="pt">Código</span><span class="en">Code</span></a></div>
+        </div>
+      </article>
+
+      <article class="tile t-videira reveal">
+        <div>
+          <div class="badge"><span class="pt">No ar</span><span class="en">Live</span></div>
+          <h3>Igreja Videira</h3>
+          <p class="desc pt">Site em Next.js que usa o Nexhub como CMS, com webhooks verificados por HMAC e integração com a API do YouTube.</p>
+          <p class="desc en">Next.js site that uses Nexhub as its CMS, with HMAC-verified webhooks and YouTube API integration.</p>
+        </div>
+        <div class="foot">
+          <p class="tags">Next.js · ISR · Webhooks</p>
+          <div class="links"><a href="https://videiraslmb.com">videiraslmb.com</a></div>
+        </div>
+      </article>
+
+      <article class="tile t-nexhub reveal">
+        <div>
+          <div class="badge quiet"><span class="pt">Código privado</span><span class="en">Private code</span></div>
+          <h3>Nexhub</h3>
+          <p class="desc pt">CMS headless multi-tenant e self-hosted, desenvolvido individualmente, com arquitetura DDD, filas assíncronas, armazenamento de mídia e painel administrativo em React. Deploy em VPS com CI/CD.</p>
+          <p class="desc en">Self-hosted, multi-tenant headless CMS built solo, with DDD architecture, async queues, media storage and a React admin panel. Deployed to a VPS with CI/CD.</p>
+        </div>
+        <div class="foot"><p class="tags">NestJS · PostgreSQL · Prisma · Redis · BullMQ · Docker</p></div>
+      </article>
+
+      <article class="tile t-table reveal">
+        <div>
+          <div class="badge quiet"><span class="pt">Código aberto</span><span class="en">Open source</span></div>
+          <h3>react-adapt-table</h3>
+          <p class="desc pt">Tabela para React com suporte a Tailwind CSS e Bootstrap.</p>
+          <p class="desc en">React table with Tailwind CSS and Bootstrap support.</p>
+        </div>
+        <div class="foot"><p class="tags">React · TypeScript</p><div class="links"><a href="https://github.com/cairoramos7/react-adapt-table"><span class="pt">Código</span><span class="en">Code</span></a></div></div>
+      </article>
+
+      <article class="tile t-md reveal">
+        <div>
+          <div class="badge quiet"><span class="pt">Código aberto</span><span class="en">Open source</span></div>
+          <h3>md2pdf</h3>
+          <p class="desc pt">Conversor de Markdown para PDF com preview ao vivo, diagramas Mermaid, callouts do Obsidian e destaque de sintaxe.</p>
+          <p class="desc en">Markdown to PDF converter with live preview, Mermaid diagrams, Obsidian callouts and syntax highlighting.</p>
+        </div>
+        <div class="foot"><p class="tags">Python · FastAPI · Playwright</p><div class="links"><a href="https://github.com/cairoramos7/md2pdf"><span class="pt">Código</span><span class="en">Code</span></a></div></div>
+      </article>
+
+      <article class="tile t-ddd reveal">
+        <div>
+          <div class="badge quiet"><span class="pt">Código aberto</span><span class="en">Open source</span></div>
+          <h3>com.node-app</h3>
+          <p class="desc pt">Aplicação Node.js com Domain-Driven Design, no formato de um blog.</p>
+          <p class="desc en">Node.js application with Domain-Driven Design, built as a blog.</p>
+        </div>
+        <div class="foot"><p class="tags">Node.js · TypeScript · DDD</p><div class="links"><a href="https://github.com/cairoramos7/com.node-app"><span class="pt">Código</span><span class="en">Code</span></a></div></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap" id="experience">
+    <div class="head reveal"><h2><span class="pt">Trajetória</span><span class="en">Experience</span></h2></div>
+    <div class="timeline">
+      <article class="role reveal">
+        <div class="when">09/2026 – <span class="pt">atual</span><span class="en">now</span></div>
+        <div class="body"><h3><span class="pt">Autônomo</span><span class="en">Freelance</span></h3>
+          <p class="pt">Plataforma B2B multiempresa com Node.js, NestJS, React e MongoDB: APIs, integrações, RBAC hierárquico e autenticação com 2FA.</p>
+          <p class="en">Multi-company B2B platform with Node.js, NestJS, React and MongoDB: APIs, integrations, hierarchical RBAC and 2FA authentication.</p></div>
+      </article>
+      <article class="role reveal">
+        <div class="when">05/2025 – 07/2026</div>
+        <div class="body"><h3>Audax Capital FIDC</h3>
+          <p class="pt">APIs REST para integração entre sistemas, otimização de consultas em SQL Server e automação de esteiras operacionais em Python/Django.</p>
+          <p class="en">REST APIs for system integration, SQL Server query optimization and operational pipeline automation in Python/Django.</p></div>
+      </article>
+      <article class="role reveal">
+        <div class="when">03/2022 – 05/2025</div>
+        <div class="body"><h3>Modal Networks</h3>
+          <p class="pt">Next.js, React, NestJS, REST e GraphQL. Pipelines com Elasticsearch, RabbitMQ, Redis e MongoDB e fluxos assíncronos para arquivos de 100 MB a 1 GB.</p>
+          <p class="en">Next.js, React, NestJS, REST and GraphQL. Pipelines with Elasticsearch, RabbitMQ, Redis and MongoDB, and async flows for files from 100 MB to 1 GB.</p></div>
+      </article>
+      <article class="role reveal">
+        <div class="when">09/2016 – 05/2025</div>
+        <div class="body"><h3>Uuhuw Software House</h3>
+          <p class="pt">Aplicações e APIs com React, Vue.js, TypeScript, Laravel e Node.js para SaaS, e-commerce e sistemas administrativos. Infraestrutura de mais de 10 clientes em AWS, GCP e DigitalOcean.</p>
+          <p class="en">Applications and APIs with React, Vue.js, TypeScript, Laravel and Node.js for SaaS, e-commerce and admin systems. Infrastructure for 10+ clients on AWS, GCP and DigitalOcean.</p></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap" id="stack">
+    <div class="head reveal"><h2>Stack</h2></div>
+    <dl class="stack reveal">
+      <div><dt>Front-end</dt><dd>JavaScript, TypeScript, React, Next.js, Vue.js, Tailwind CSS</dd></div>
+      <div><dt>Back-end</dt><dd>Node.js, NestJS, REST, GraphQL, JWT, DDD</dd></div>
+      <div><dt><span class="pt">Dados e filas</span><span class="en">Data and queues</span></dt><dd>PostgreSQL, MongoDB, MySQL, SQL Server, Redis, RabbitMQ, BullMQ, Elasticsearch</dd></div>
+      <div><dt>Cloud</dt><dd>AWS, GCP, Docker, GitHub Actions</dd></div>
+    </dl>
+  </section>
+
+  <section class="wrap contact" id="contact">
+    <h2 class="reveal"><span class="pt">Vamos conversar</span><span class="en">Let's talk</span></h2>
+    <p class="reveal pt">Aberto a oportunidades remotas, no Brasil e fora dele.</p>
+    <p class="reveal en">Open to remote opportunities, in Brazil and abroad.</p>
+    <div class="actions reveal">
+      <a class="btn" href="mailto:cairoramos7@gmail.com">cairoramos7@gmail.com</a>
+      <a class="more" href="https://www.linkedin.com/in/cairoramos-dev/">LinkedIn</a>
+      <a class="more" href="https://github.com/cairoramos7">GitHub</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="pt">São Luís de Montes Belos, GO, Brasil. Inglês: leitura e escrita intermediário.</span>
+    <span class="en">São Luís de Montes Belos, GO, Brazil. English: intermediate reading and writing.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  root.classList.add('js');
+  var langBtn = document.getElementById('lang');
+  var themeBtn = document.getElementById('theme');
+  function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function setLang(l) {
+    root.setAttribute('data-lang', l);
+    root.lang = l === 'en' ? 'en' : 'pt-BR';
+    langBtn.textContent = l === 'en' ? 'PT' : 'EN';
+    set('lang', l);
+  }
+  setLang(get('lang') || ((navigator.language || '').toLowerCase().indexOf('pt') === 0 ? 'pt' : 'en'));
+  langBtn.addEventListener('click', function () {
+    setLang(root.getAttribute('data-lang') === 'en' ? 'pt' : 'en');
+  });
+  var savedTheme = get('theme');
+  if (savedTheme) { root.setAttribute('data-theme', savedTheme); }
+  themeBtn.addEventListener('click', function () {
+    var dark = root.getAttribute('data-theme') === 'dark';
+    var next = dark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    set('theme', next);
+  });
+
+  /* reveal on scroll */
+  var items = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    items.forEach(function (el) { io.observe(el); });
+  } else {
+    items.forEach(function (el) { el.classList.add('in'); });
+  }
+
+
+  /* statements light up word by word as they cross the screen */
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var stmts = [];
+  if (!reduceMotion) {
+    document.querySelectorAll('.statement p > span').forEach(function (sp) {
+      var words = sp.textContent.trim().split(/\s+/);
+      sp.textContent = '';
+      var list = words.map(function (w, i) {
+        var el = document.createElement('span');
+        el.className = 'w';
+        el.textContent = w + (i < words.length - 1 ? ' ' : '');
+        sp.appendChild(el);
+        return el;
+      });
+      stmts.push({ host: sp, words: list });
+    });
+    var update = function () {
+      var vh = window.innerHeight;
+      stmts.forEach(function (st) {
+        if (!st.host.offsetParent) { return; }
+        var r = st.host.getBoundingClientRect();
+        var p = Math.min(Math.max((vh * 0.85 - r.top) / (vh * 0.5), 0), 1);
+        var n = Math.round(p * st.words.length);
+        st.words.forEach(function (w, i) { w.classList.toggle('on', i < n); });
+      });
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+
+
+  /* specular highlight that follows the pointer on glass tiles */
+  document.querySelectorAll('.tile').forEach(function (t) {
+    t.addEventListener('pointermove', function (e) {
+      var r = t.getBoundingClientRect();
+      t.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      t.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
