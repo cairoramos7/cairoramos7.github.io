@@ -180,7 +180,7 @@ main, footer { position: relative; z-index: 1; }
 .statement small { display: block; margin-top: 16px; font-size: 15px; font-weight: 500; letter-spacing: 0; color: var(--muted); max-width: 44ch; line-height: 1.4; }
 
 /* section heads */
-.head { padding: 96px 0 32px; }
+.head { padding: 64px 0 32px; }
 .head h2 {
   margin: 0; font-size: clamp(2.2rem, 6vw, 3.8rem); font-weight: 600; line-height: 1.05; letter-spacing: -0.03em; text-wrap: balance;
 }
@@ -341,13 +341,12 @@ footer .wrap { border-top: 1px solid rgba(244,241,234,.14); }
   html { scroll-snap-type: y proximity; }
   @media (min-width: 640px) { html { scroll-snap-type: y mandatory; } }
 }
-#experience, #stack, .contact, footer { scroll-snap-align: start; scroll-margin-top: 0; }
+.contact, footer { scroll-snap-align: start; scroll-margin-top: 0; }
 .statement p { scroll-snap-stop: always; }
 .statement p { scroll-snap-align: start; scroll-margin-top: 0; }
 #hero { scroll-snap-align: start; scroll-margin-top: 0; }
 /* during menu navigation, snapping would fight the programmatic scroll on touch browsers */
 html.nav-jump { scroll-snap-type: none !important; }
-#projects { scroll-snap-align: start; scroll-margin-top: 0; }
 /* discreet database drawing next to the first result */
 .statement p { position: relative; }
 .db { --dbw: clamp(220px, 36vw, 520px); position: absolute; right: calc((100% - 100vw) / 2 - var(--dbw) * 0.24); top: 50%; width: var(--dbw); height: auto; transform: translateY(-50%); color: var(--coral-on-navy); opacity: .26; stroke-width: 1; pointer-events: none; }
@@ -383,7 +382,6 @@ html.nav-jump { scroll-snap-type: none !important; }
   .js .days.drawn rect:nth-child(n+3) { opacity: .12; }
 }
 /* every block is at least one screen tall, so each scroll lands on a whole block */
-#projects, #experience, #stack { min-height: calc(100svh - 64px); display: flex; flex-direction: column; justify-content: center; }
 .contact { min-height: calc(100svh - 64px); display: flex; flex-direction: column; justify-content: center; align-items: center; }
 /* stack: grouped cards with the real logos */
 .stack-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
